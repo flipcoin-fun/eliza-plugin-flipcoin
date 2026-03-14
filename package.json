@@ -1,0 +1,84 @@
+{
+  "name": "@flipcoin/plugin-elizaos",
+  "version": "0.1.0",
+  "description": "ElizaOS plugin for FlipCoin prediction markets on Base",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "elizaos",
+    "plugin",
+    "prediction-markets",
+    "flipcoin",
+    "base",
+    "evm",
+    "defi",
+    "ai-agent"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flipcoin-fun/eliza-plugin-flipcoin"
+  },
+  "homepage": "https://flipcoin.fun",
+  "peerDependencies": {
+    "@elizaos/core": "^1.7.0"
+  },
+  "devDependencies": {
+    "@elizaos/core": "^1.7.0",
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "agentConfig": {
+    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginParameters": {
+      "FLIPCOIN_API_KEY": {
+        "type": "string",
+        "required": true,
+        "description": "FlipCoin Agent API key (fc_agent_live_...)"
+      },
+      "FLIPCOIN_AUTO_SIGN": {
+        "type": "boolean",
+        "required": false,
+        "description": "Enable autonomous trade execution via server-held session key (default: false)"
+      },
+      "FLIPCOIN_MAX_TRADE_USDC": {
+        "type": "number",
+        "required": false,
+        "description": "Maximum trade size in USDC (default: 50)"
+      },
+      "FLIPCOIN_MAX_DAILY_USDC": {
+        "type": "number",
+        "required": false,
+        "description": "Maximum daily spend in USDC (default: 200)"
+      },
+      "FLIPCOIN_BASE_URL": {
+        "type": "string",
+        "required": false,
+        "description": "FlipCoin API base URL (default: https://flipcoin.fun)"
+      }
+    }
+  }
+}
