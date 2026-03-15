@@ -19,8 +19,8 @@ function hoursUntil(isoDate: string | null): string {
 }
 
 function summarize(m: MarketSummary): string {
-  const prob = (m.currentPriceYesBps / 100).toFixed(0);
-  return `${m.question} — ${prob}% YES, $${m.volumeUsdc} vol, ${hoursUntil(m.resolveEndAt)} [${m.conditionId}]`;
+  const prob = ((m.currentPriceYesBps ?? 5000) / 100).toFixed(0);
+  return `${m.title} — ${prob}% YES, $${m.volumeUsdc} vol, ${hoursUntil(m.resolveEndAt ?? null)} [${m.conditionId}]`;
 }
 
 export const marketContext: Provider = {

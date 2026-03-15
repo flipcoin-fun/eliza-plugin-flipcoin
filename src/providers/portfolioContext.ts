@@ -26,22 +26,19 @@ export const portfolioContext: Provider = {
       );
 
       const lines: string[] = [
-        `FlipCoin vault: $${portfolio.vaultBalance} | ${openPositions.length} open positions`,
+        `FlipCoin portfolio: ${openPositions.length} open, ${portfolio.totals?.marketsResolved ?? 0} resolved`,
       ];
 
       // Top positions by current value
       const sorted = [...openPositions].sort(
-        (a, b) =>
-          parseFloat(b.currentValueUsdc) - parseFloat(a.currentValueUsdc),
+        (a, b) => b.currentValueUsdc - a.currentValueUsdc,
       );
 
       for (const p of sorted.slice(0, MAX_POSITIONS)) {
-        const side =
-          parseFloat(p.yesShares) > parseFloat(p.noShares) ? "YES" : "NO";
-        const shares =
-          side === "YES" ? p.yesShares : p.noShares;
+        const side = p.netSide === "yes" ? "YES" : "NO";
+        const shares = p.netShares;
         lines.push(
-          `  ${p.question} — ${shares} ${side}, value $${p.currentValueUsdc}, PnL $${p.pnlUsdc}`,
+          `  ${p.title} — ${shares} ${side}, value $${p.currentValueUsdc}, PnL $${p.pnlUsdc}`,
         );
       }
 
@@ -52,8 +49,8 @@ export const portfolioContext: Provider = {
       return {
         text: lines.join("\n"),
         data: {
-          vaultBalance: portfolio.vaultBalance,
           openCount: openPositions.length,
+          resolvedCount: portfolio.totals?.marketsResolved ?? 0,
         },
         values: {},
       };

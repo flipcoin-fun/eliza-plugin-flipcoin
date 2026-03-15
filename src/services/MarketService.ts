@@ -6,6 +6,7 @@ import type { ApiClient } from "./ApiClient.js";
 import type {
   MarketSummary,
   MarketDetail,
+  MarketDetailsResponse,
   ExploreParams,
   PortfolioResponse,
   Quote,
@@ -51,12 +52,12 @@ export class MarketService {
     return res.markets;
   }
 
-  /** Get full detail for a single market. */
+  /** Get full detail for a single market (unwraps nested response). */
   async getDetail(address: string): Promise<MarketDetail> {
-    const res = await this.api.get<MarketDetail>(
+    const res = await this.api.get<MarketDetailsResponse>(
       `/api/agent/markets/${address}`,
     );
-    return res;
+    return res.market;
   }
 
   /** Get a deterministic quote (public endpoint, no auth). */

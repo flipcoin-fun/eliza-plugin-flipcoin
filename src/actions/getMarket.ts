@@ -46,19 +46,15 @@ export const getMarket: Action = {
     }
 
     const detail = await svc.markets.getDetail(addressMatch[0]);
-    const prob = (detail.currentPriceYesBps / 100).toFixed(0);
+    const prob = ((detail.currentPriceYesBps ?? 5000) / 100).toFixed(0);
 
     return {
       success: true,
       text: [
-        `**${detail.question}**`,
+        `**${detail.title}**`,
         `Status: ${detail.status} | YES: ${prob}% | Volume: $${detail.volumeUsdc}`,
         detail.description ? `Description: ${detail.description}` : null,
-        detail.resolutionCriteria
-          ? `Resolution: ${detail.resolutionCriteria}`
-          : null,
-        `Vault: $${detail.vaultBalance} | 24h vol: $${detail.stats.volume24h} (${detail.stats.trades24h} trades)`,
-        `Address: ${detail.address}`,
+        `Address: ${detail.marketAddr}`,
         `Condition ID: ${detail.conditionId}`,
       ]
         .filter(Boolean)
