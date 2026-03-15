@@ -59,7 +59,7 @@ export class PolicyService {
     }
 
     // 5. Price impact guard
-    if (quote.priceImpactGuard.level === "block") {
+    if (quote.priceImpactGuard?.level === "blocked") {
       return {
         allowed: false,
         reason: `Price impact ${quote.priceImpactGuard.impactBps}bps exceeds hard limit`,

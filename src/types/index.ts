@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// FlipCoin Plugin — shared types
+// FlipCoin Plugin — shared types (aligned with OpenAPI spec 2026-03-13)
 // ---------------------------------------------------------------------------
 
 /** Plugin configuration resolved from runtime settings. */
@@ -16,43 +16,79 @@ export interface FlipCoinConfig {
 // ---------------------------------------------------------------------------
 
 export interface MarketSummary {
-  address: string;
-  conditionId: string;
-  question: string;
-  category: string;
-  status: "open" | "pending" | "resolved" | "expired";
-  currentPriceYesBps: number;
-  currentPriceNoBps: number;
-  volumeUsdc: string;
-  resolveEndAt: string | null;
+  id: string;
+  marketAddr: string;
+  conditionId: string | null;
+  title: string;
+  description?: string;
+  category?: string | null;
+  status: "open" | "paused" | "pending" | "resolved";
+  currentPriceYesBps?: number;
+  currentPriceNoBps?: number;
+  volumeUsdc: number;
+  liquidityUsdc?: number;
+  tradesCount: number;
+  resolveEndAt?: string | null;
   createdAt: string;
-  outcome?: string | null;
+  resolvedOutcome?: boolean | null;
+  imageUrl?: string | null;
+  fingerprint?: string;
+  creatorAddr?: string | null;
+  updatedAt?: string | null;
 }
 
+/** Full market details — wrapped in { market, recentTrades, stats }. */
 export interface MarketDetail extends MarketSummary {
-  description: string | null;
-  resolutionCriteria: string | null;
-  resolutionSource: string | null;
-  liquidityParam: number;
-  vaultBalance: string;
+  agentMetadata?: AgentMetadata;
+  resolution?: ResolutionInfo;
+  volumeBySource?: { backstop: string; clob: string; total: string };
+  lastActivityAt?: string | null;
+  resolveStartAt?: string | null;
+  resolvedAt?: string | null;
+  createdByAgentId?: string | null;
+}
+
+export interface AgentMetadata {
+  reasoning?: string;
+  confidence?: number;
+  sources?: string[];
+  modelId?: string;
+  tags?: string[];
+}
+
+export interface ResolutionInfo {
+  proposedOutcome: "yes" | "no" | "invalid" | null;
+  proposedAt: string | null;
+  finalizeAfter: string | null;
+  canFinalize: boolean;
+  disputeTimeRemaining: number;
+  isDisputed: boolean;
+}
+
+/** Response shape from GET /api/agent/markets/{address} */
+export interface MarketDetailsResponse {
+  market: MarketDetail;
+  recentTrades: RecentTrade[];
   stats: {
     volume24h: string;
     trades24h: number;
   };
-  recentTrades: RecentTrade[];
 }
 
 export interface RecentTrade {
+  trader: string;
   side: "yes" | "no";
-  isBuy: boolean;
-  amountUsdc: string;
-  shares: string;
+  amountUsdc: number;
+  shares: number;
+  fee: number;
   priceYesBps: number;
-  timestamp: string;
+  txHash: string;
+  blockNumber: number;
+  eventTime: string;
 }
 
 export interface ExploreParams {
-  status?: "open" | "pending" | "resolved" | "expired";
+  status?: "open" | "pending" | "resolved" | "all";
   sort?: "volume" | "created" | "trades" | "deadlineSoon";
   search?: string;
   limit?: number;
@@ -63,27 +99,48 @@ export interface QuoteParams {
   conditionId: string;
   side: "yes" | "no";
   action: "buy" | "sell";
-  amount: string; // bigint string, 6 decimals
+  amount: string; // number of shares as bigint string, 6 decimals
 }
 
 export interface Quote {
   quoteId: string;
+  conditionId: string;
+  side: "yes" | "no";
+  action: "buy" | "sell";
+  amount: string;
   venue: "lmsr" | "clob";
+  reason: string;
   validUntil: string;
-  lmsr: {
+  mayPartialFill?: boolean;
+  lmsr?: {
+    available: boolean;
     sharesOut: string;
+    amountOut: string;
     fee: string;
+    priceYesBps: number;
+    priceNoBps: number;
+    newPriceYesBps: number;
     priceImpactBps: number;
     avgPriceBps: number;
   } | null;
-  clob: {
+  clob?: {
+    available: boolean;
     canFillFull: boolean;
+    sharesOut: string;
+    amountOut: string;
+    avgPriceBps: number;
+    levelsUsed: number;
     bestBidBps: number;
     bestAskBps: number;
+    spreadBps: number;
+    depthNearMid: number;
   } | null;
-  priceImpactGuard: {
-    level: "ok" | "warn" | "block";
+  priceImpactGuard?: {
+    currentPriceYesBps: number;
+    newPriceYesBps: number;
     impactBps: number;
+    maxAllowedImpactBps: number;
+    level: "ok" | "warn" | "blocked";
   };
 }
 
@@ -94,71 +151,135 @@ export interface TradeIntentParams {
   usdcAmount?: string;
   sharesAmount?: string;
   maxSlippageBps?: number;
+  maxFeeBps?: number;
+  venue?: "lmsr" | "clob" | "auto";
 }
 
 export interface TradeIntent {
   intentId: string;
+  status: "awaiting_relay";
+  venue: "lmsr" | "clob";
   quote: {
     sharesOut: string;
     fee: string;
     avgPriceBps: number;
     priceImpactBps: number;
   };
-  balanceCheck: {
+  balanceCheck?: {
     sufficient: boolean;
     available: string;
     required: string;
   };
+  priceImpactGuard?: {
+    currentPriceYesBps: number;
+    newPriceYesBps: number;
+    impactBps: number;
+    maxAllowedImpactBps: number;
+    level: "ok" | "warn" | "blocked";
+  };
 }
 
 export interface TradeReceipt {
-  status: "submitted" | "confirmed" | "failed" | "unknown";
+  status: "confirmed" | "failed";
   intentId: string;
+  venue: "lmsr";
   txHash?: string;
+  sharesOut?: string;
+  usdcOut?: string;
+  feeUsdc?: string;
+  nextNonce?: string | null;
+  error?: string | null;
+  errorCode?: string | null;
+  retryable?: boolean;
+  // Enriched by plugin
   conditionId: string;
   side: "yes" | "no";
   action: "buy" | "sell";
   requestedUsdc: string;
   quotedShares: string;
-  feeUsdc: string;
   priceImpactBps: number;
   message: string;
 }
 
 export interface Position {
-  conditionId: string;
-  marketAddress: string;
-  question: string;
+  marketAddr: string;
+  title: string;
   status: string;
-  yesShares: string;
-  noShares: string;
-  currentValueUsdc: string;
-  pnlUsdc: string;
-  avgEntryPriceUsdc: string;
+  yesShares: number;
+  noShares: number;
+  netSide: "yes" | "no";
+  netShares: number;
+  avgEntryPriceUsdc: number;
+  currentPriceBps: number;
+  currentValueUsdc: number;
+  pnlUsdc: number;
+  lastTradeAt: string;
 }
 
 export interface PortfolioResponse {
-  vaultBalance: string;
   positions: Position[];
+  totals: {
+    marketsActive: number;
+    marketsResolved: number;
+  };
 }
 
 export interface PingResponse {
   ok: boolean;
-  agentId: string;
-  feeTier: string;
-  scopes: string[];
+  agent: {
+    name: string;
+  };
+  rateLimit: {
+    read: RateLimitBucket;
+    write: RateLimitBucket;
+    create: RateLimitBucket;
+    trade: RateLimitBucket;
+    autosign: RateLimitBucket;
+    dailyMarkets: {
+      remaining: number;
+      limit: number;
+      resetAt: string;
+    };
+  };
+  fees: {
+    tier: "early_adopter" | "standard";
+    creatorFeeBps: number;
+    protocolFeeBps: number;
+    totalFeeBps: number;
+    totalFeePercent: string;
+  };
+}
+
+export interface RateLimitBucket {
+  remaining: number;
+  limit: number;
+  window: string;
+  resetAt: string;
 }
 
 export interface ConfigResponse {
+  chainId: number;
+  mode: "testnet" | "mainnet";
   contracts: Record<string, string>;
   capabilities: {
     relay: boolean;
     autoSign: boolean;
+    sessionKeys: boolean;
+    treasury: boolean;
     deposit: boolean;
+    withdraw?: boolean;
+    resolution?: boolean;
   };
-  tradingConstants: {
+  limits: {
     minTradeUsdc: string;
     maxTradeUsdc: string;
+  };
+  trading: {
+    venues: string[];
+    autoSign: {
+      maxTradeUsdc: string;
+      maxTxPerMinute: number;
+    };
   };
 }
 

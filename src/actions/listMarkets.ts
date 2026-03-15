@@ -7,14 +7,14 @@ import { FlipCoinService } from "../services/FlipCoinService.js";
 import type { ExploreParams } from "../types/index.js";
 
 function formatMarketLine(m: {
-  question: string;
-  address: string;
-  currentPriceYesBps: number;
-  volumeUsdc: string;
+  title: string;
+  marketAddr: string;
+  currentPriceYesBps?: number;
+  volumeUsdc: number;
   status: string;
 }): string {
-  const prob = (m.currentPriceYesBps / 100).toFixed(0);
-  return `- ${m.question} (${prob}% YES, vol $${m.volumeUsdc}, ${m.status}) [${m.address}]`;
+  const prob = ((m.currentPriceYesBps ?? 5000) / 100).toFixed(0);
+  return `- ${m.title} (${prob}% YES, vol $${m.volumeUsdc}, ${m.status}) [${m.marketAddr}]`;
 }
 
 export const listMarkets: Action = {

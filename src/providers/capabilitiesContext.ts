@@ -17,18 +17,18 @@ export const capabilitiesContext: Provider = {
     const svc = runtime.getService<FlipCoinService>("FLIPCOIN");
     if (!svc) return { text: "", data: {}, values: {} };
 
-    const canTrade =
-      svc.ping?.scopes.includes("trade") ?? false;
     const autoSign =
       svc.serverConfig?.capabilities.autoSign ?? false;
+    const canTrade = svc.ping?.ok ?? false;
     const dailyRemaining = svc.policy.getDailyRemaining();
+    const feeTier = svc.ping?.fees?.tier ?? "unknown";
 
     const lines = [
       `FlipCoin agent status:`,
       `  canTrade: ${canTrade && autoSign ? "yes (auto_sign)" : canTrade ? "yes (manual sign)" : "no"}`,
       `  maxTradeUsdc: $${runtime.getSetting("FLIPCOIN_MAX_TRADE_USDC") || "50"}`,
       `  dailyRemainingUsdc: $${dailyRemaining.toFixed(2)}`,
-      `  feeTier: ${svc.ping?.feeTier ?? "unknown"}`,
+      `  feeTier: ${feeTier}`,
       `  supportsCreateMarket: no (Phase 2)`,
       `  supportsCLOB: no (Phase 3)`,
     ];

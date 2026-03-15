@@ -66,8 +66,9 @@ export class TradingService {
     params: TradeIntentParams & { action: "buy" | "sell" },
     intent: TradeIntent,
   ): Promise<TradeReceipt> {
-    const base: Omit<TradeReceipt, "status" | "txHash" | "message"> = {
+    const base = {
       intentId,
+      venue: intent.venue as "lmsr",
       conditionId: params.conditionId,
       side: params.side,
       action: params.action,
@@ -80,7 +81,7 @@ export class TradingService {
     if (!this.config.autoSign) {
       return {
         ...base,
-        status: "unknown",
+        status: "failed" as const,
         message:
           "auto_sign is disabled. Use the intent's typedData to sign externally.",
       };
@@ -98,17 +99,17 @@ export class TradingService {
 
       return {
         ...base,
-        status: "submitted",
+        status: "confirmed" as const,
         txHash: res.txHash,
         quotedShares: res.sharesOut ?? base.quotedShares,
         feeUsdc: res.feeUsdc ?? base.feeUsdc,
-        message: `Trade submitted. tx: ${res.txHash}`,
+        message: `Trade confirmed. tx: ${res.txHash}`,
       };
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
         ...base,
-        status: "failed",
+        status: "failed" as const,
         message: `Trade relay failed: ${msg}`,
       };
     }
