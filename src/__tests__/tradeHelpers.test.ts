@@ -39,6 +39,14 @@ describe("parseTradeMessage", () => {
     expect(result).toContain("condition ID");
   });
 
+  it("returns helpful hint when market address (40 hex) is provided instead of conditionId", () => {
+    const address = "0x" + "b".repeat(40);
+    const result = parseTradeMessage(`Buy $5 YES on ${address}`);
+    expect(typeof result).toBe("string");
+    expect(result).toContain("market address");
+    expect(result).toContain("GET_MARKET");
+  });
+
   it("returns error when no amount", () => {
     const result = parseTradeMessage(
       `Buy YES on ${validConditionId}`,

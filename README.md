@@ -15,7 +15,11 @@ Built-in risk guardrails: max trade size, daily spend limits, price impact check
 ## Install
 
 ```bash
+# From npm (when published)
 npm install @flipcoin/plugin-elizaos
+
+# From GitHub
+npm install github:flipcoin-fun/eliza-plugin-flipcoin
 ```
 
 ## Quick start
@@ -44,7 +48,7 @@ const character = {
 | `FLIPCOIN_AUTO_SIGN` | No | `false` | Enable server-side signing for autonomous trades |
 | `FLIPCOIN_MAX_TRADE_USDC` | No | `50` | Maximum single trade size in USDC |
 | `FLIPCOIN_MAX_DAILY_USDC` | No | `200` | Maximum daily spend in USDC |
-| `FLIPCOIN_BASE_URL` | No | `https://flipcoin.fun` | API base URL |
+| `FLIPCOIN_BASE_URL` | No | `https://www.flipcoin.fun` | API base URL |
 
 ## Getting an API key
 
@@ -88,6 +92,11 @@ Agent message
     → PolicyService.recordSpend()
   → TradeReceipt returned to agent
 ```
+
+## Known limitations
+
+- **Daily spend tracking is in-memory**: resets on agent restart. Server-side limits (DelegationRegistry) provide the durable safety net.
+- **Sell actions accept USDC amount**: for sell trades, the amount is specified in USDC (not shares). Share-based sells are planned for Phase 2.
 
 ## Roadmap
 

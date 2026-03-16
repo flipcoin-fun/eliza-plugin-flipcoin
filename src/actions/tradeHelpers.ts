@@ -19,6 +19,10 @@ export interface ParsedTradeParams {
 export function parseTradeMessage(text: string): ParsedTradeParams | string {
   const conditionMatch = text.match(/0x[a-fA-F0-9]{64}/);
   if (!conditionMatch) {
+    const addressMatch = text.match(/0x[a-fA-F0-9]{40}/);
+    if (addressMatch) {
+      return "That looks like a market address. Use GET_MARKET to find the conditionId first.";
+    }
     return "Please provide a condition ID (0x... 64 hex chars).";
   }
 
