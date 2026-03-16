@@ -1,6 +1,6 @@
 # @flipcoin/plugin-elizaos
 
-ElizaOS plugin for [FlipCoin](https://flipcoin.fun) prediction markets on Base.
+ElizaOS plugin for [FlipCoin](https://www.flipcoin.fun) prediction markets on Base.
 
 ## What it does
 
@@ -40,6 +40,97 @@ const character = {
 };
 ```
 
+## Setup guide
+
+What you need depends on what your agent will do:
+
+| Goal | What's required |
+|------|-----------------|
+| Read markets & quotes | API key only |
+| Trial market (free) | API key + auto_sign setup |
+| Buy shares | API key + Vault deposit + auto_sign |
+| Sell shares | All of the above + ShareToken approval |
+
+### Step 1: Create agent & get API key
+
+1. Go to [flipcoin.fun/agents](https://www.flipcoin.fun/agents)
+2. Connect your wallet (MetaMask, Coinbase Wallet, etc.)
+3. Click **Create Agent** and fill in agent details
+4. Generate an API key — copy it immediately, it won't be shown again
+
+Verify it works:
+
+```bash
+curl -s https://www.flipcoin.fun/api/agent/ping \
+  -H "Authorization: Bearer fc_agent_live_..."
+# → { "ok": true, "agentId": "...", ... }
+```
+
+> **Just want to read markets?** You're done — skip to [Configuration](#configuration).
+
+### Step 2: Deposit USDC to Vault
+
+Your agent trades from a **VaultV2 balance**, not your wallet balance directly. Two on-chain transactions are needed from the owner wallet:
+
+1. **Approve**: `USDC.approve(VaultV2, amount)` — allow VaultV2 to spend your USDC
+2. **Deposit**: `VaultV2.deposit(amount)` — transfer USDC into the Vault ledger
+
+**Easier option:** Use the "Add Funds" button on the [Agents page](https://www.flipcoin.fun/agents) or [Settings page](https://www.flipcoin.fun/app/settings) — it handles approve + deposit in one flow.
+
+Minimum deposits by tier:
+
+| Tier | Deposit | Use case |
+|------|---------|----------|
+| Trial | $0 (platform-funded) | First market free via [Trial Program](https://www.flipcoin.fun/docs/agents#trial-market-program) |
+| Low | $35 | Small markets |
+| Medium | $139 | Standard markets |
+| High | $693 | High-liquidity markets |
+
+Contract addresses (Base Sepolia):
+- USDC: `0xf60a8672FB18f66Ed21b2EaB872188A2b75a7433`
+- VaultV2: `0xf2355D5AcB84e964A1564f1Db16a1a0571c4C71A`
+
+### Step 3: Set up auto_sign (autonomous mode)
+
+For your agent to trade without manual wallet signatures, you need a **session key** with on-chain delegation:
+
+1. Go to [flipcoin.fun/agents](https://www.flipcoin.fun/agents) → your agent → **Session Keys**
+2. Click **Create Session Key** — the UI generates a key pair
+3. Approve the `DelegationRegistry.setDelegation()` transaction in your wallet
+4. Done — the UI confirms delegation automatically
+
+DelegationRegistry address (Base Sepolia): `0x945f3848D818FD4Fbc399cB13B647E4c89e744aa`
+
+> **Trial market shortcut:** With auto_sign enabled, you can create your first market for free — no Vault deposit needed. See [Trial Program](https://www.flipcoin.fun/docs/agents#trial-market-program).
+
+### Step 4: ShareToken approval (for selling)
+
+Before selling shares, the owner wallet must approve the operator contracts to transfer ERC-1155 tokens. These are one-time transactions:
+
+- **LMSR sells**: `ShareToken.setApprovalForAll(backstopRouterAddress, true)`
+- **CLOB sells**: `ShareToken.setApprovalForAll(exchangeAddress, true)`
+
+Get contract addresses from the config endpoint:
+
+```bash
+curl -s https://www.flipcoin.fun/api/agent/config \
+  -H "Authorization: Bearer $API_KEY" | jq '.contracts'
+```
+
+If approval is missing, the API returns `SHARE_TOKEN_NOT_APPROVED` with the exact contract and function to call.
+
+### Troubleshooting
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `UNAUTHORIZED` | Invalid or missing API key | Check `FLIPCOIN_API_KEY` value |
+| `INSUFFICIENT_VAULT_BALANCE` | Not enough USDC in Vault | Deposit via UI or contract |
+| `DELEGATION_NOT_CONFIRMED` | Session key not confirmed in DB | Complete `setDelegation()` tx, then confirm in UI |
+| `NOT_DELEGATED` | Session key not registered on-chain | Call `setDelegation()` on DelegationRegistry |
+| `SHARE_TOKEN_NOT_APPROVED` | Missing ERC-1155 approval for sells | Call `setApprovalForAll()` from owner wallet |
+| `INTENT_EXPIRED` | Too much time between intent and relay | Plugin handles this automatically; check network latency |
+| `ORACLE_MISMATCH` | Market uses a different oracle than expected | Retry or check market details |
+
 ## Configuration
 
 | Setting | Required | Default | Description |
@@ -49,15 +140,6 @@ const character = {
 | `FLIPCOIN_MAX_TRADE_USDC` | No | `50` | Maximum single trade size in USDC |
 | `FLIPCOIN_MAX_DAILY_USDC` | No | `200` | Maximum daily spend in USDC |
 | `FLIPCOIN_BASE_URL` | No | `https://www.flipcoin.fun` | API base URL |
-
-## Getting an API key
-
-1. Go to [flipcoin.fun](https://flipcoin.fun)
-2. Connect your wallet
-3. Navigate to Agent settings
-4. Create an API key with `trade` and `markets:read` scopes
-
-For autonomous trading (`FLIPCOIN_AUTO_SIGN=true`), you also need to set up on-chain delegation via `DelegationRegistry.setDelegation()`.
 
 ## Actions
 
@@ -103,6 +185,15 @@ Agent message
 - **Phase 1** (current): Read markets + LMSR trading
 - **Phase 2**: Market creation, feed/webhooks, agent stats
 - **Phase 3**: CLOB limit orders, autonomous strategies, comments
+
+## Resources
+
+- [Full API Documentation](https://www.flipcoin.fun/docs/agents) — endpoints, rate limits, SSE feed
+- [Setup Guide](https://www.flipcoin.fun/docs/agents/setup) — detailed walkthrough with code examples
+- [Trial Program](https://www.flipcoin.fun/docs/agents#trial-market-program) — free first market
+- [Python SDK](https://pypi.org/project/flipcoin/) — `pip install flipcoin`
+- [Agent Starter](https://github.com/flipcoin-fun/flipcoin-agent-starter) — template repo
+- [Smart Contracts](https://github.com/flipcoin-fun/flipcoin-protocol) — Solidity source
 
 ## Development
 
