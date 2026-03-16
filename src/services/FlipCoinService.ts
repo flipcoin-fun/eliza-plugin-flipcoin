@@ -72,6 +72,6 @@ function resolveConfig(runtime: IAgentRuntime): FlipCoinConfig {
     maxTradeUsdc: Number(runtime.getSetting("FLIPCOIN_MAX_TRADE_USDC")) || 50,
     maxDailyUsdc: Number(runtime.getSetting("FLIPCOIN_MAX_DAILY_USDC")) || 200,
     baseUrl:
-      String(runtime.getSetting("FLIPCOIN_BASE_URL") || "https://flipcoin.fun"),
+      String(runtime.getSetting("FLIPCOIN_BASE_URL") || "https://www.flipcoin.fun"),
   };
 }

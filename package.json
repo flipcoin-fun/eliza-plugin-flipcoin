@@ -77,7 +77,7 @@
       "FLIPCOIN_BASE_URL": {
         "type": "string",
         "required": false,
-        "description": "FlipCoin API base URL (default: https://flipcoin.fun)"
+        "description": "FlipCoin API base URL (default: https://www.flipcoin.fun)"
       }
     }
   }
