@@ -91,6 +91,12 @@ export interface ExploreParams {
   status?: "open" | "pending" | "resolved" | "all";
   sort?: "volume" | "created" | "trades" | "deadlineSoon";
   search?: string;
+  fingerprint?: string;
+  createdByAgent?: string;
+  creatorAddr?: string;
+  minVolume?: number;
+  resolveEndBefore?: string;
+  resolveEndAfter?: string;
   limit?: number;
   offset?: number;
 }
@@ -112,6 +118,10 @@ export interface Quote {
   reason: string;
   validUntil: string;
   mayPartialFill?: boolean;
+  splitLegs?: {
+    clob?: { shares: string; cost: string; avgPriceBps: number };
+    lmsr?: { shares: string; cost: string; avgPriceBps: number };
+  };
   lmsr?: {
     available: boolean;
     sharesOut: string;
@@ -247,6 +257,20 @@ export interface PingResponse {
     protocolFeeBps: number;
     totalFeeBps: number;
     totalFeePercent: string;
+    resolutionFeeBps?: number;
+    creatorFeePercent?: string;
+    earlyAdopter?: {
+      isEarlyAdopter: boolean;
+      activationRank: number | null;
+      slotsTotal: number;
+      slotsRemaining: number;
+    };
+    seedSubsidy?: {
+      eligible: boolean;
+      total: number;
+      used: number;
+      remaining: number;
+    };
   };
 }
 
@@ -260,6 +284,7 @@ export interface RateLimitBucket {
 export interface ConfigResponse {
   chainId: number;
   mode: "testnet" | "mainnet";
+  feeRecipientPolicy?: "owner_wallet" | "session_key";
   contracts: Record<string, string>;
   capabilities: {
     relay: boolean;
@@ -273,13 +298,52 @@ export interface ConfigResponse {
   limits: {
     minTradeUsdc: string;
     maxTradeUsdc: string;
+    maxBatchSize?: number;
+    dailyMarketCapPerAgent?: number;
+    dailyMarketCapPerOwner?: number;
+    dailyTradesPerAgent?: number;
+    dailyTradesPerOwner?: number;
   };
   trading: {
     venues: string[];
+    lmsr?: {
+      quoteValiditySeconds: number;
+      defaultSlippageBps: number;
+      defaultMaxFeeBps: number;
+    };
+    clob?: {
+      timeInForceOptions: string[];
+      maxOrderDurationDays: number;
+    };
     autoSign: {
       maxTradeUsdc: string;
       maxTxPerMinute: number;
     };
+    rateLimit?: {
+      sustained: string;
+      burst: string;
+    };
+  };
+  fees?: {
+    lmsrTradingFeeBps: number;
+    clobMakerFeeBps: number;
+    clobTakerFeeBps: number;
+    note?: string;
+  };
+  vault?: {
+    minDepositUsdc?: string;
+    maxDepositUsdc?: string;
+    intentExpirySeconds?: number;
+    withdrawIntentExpirySeconds?: number;
+    withdrawAutoSignSupported?: boolean;
+    autoSign?: {
+      maxDepositUsdc: string;
+      maxTxPerMinute: number;
+    };
+    minWithdrawUsdc?: string;
+    maxWithdrawUsdc?: string;
+    note?: string;
+    withdrawNote?: string;
   };
 }
 
