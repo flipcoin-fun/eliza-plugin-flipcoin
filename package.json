@@ -40,7 +40,7 @@
     "type": "git",
     "url": "https://github.com/flipcoin-fun/eliza-plugin-flipcoin"
   },
-  "homepage": "https://flipcoin.fun",
+  "homepage": "https://www.flipcoin.fun",
   "peerDependencies": {
     "@elizaos/core": "^1.7.0"
   },

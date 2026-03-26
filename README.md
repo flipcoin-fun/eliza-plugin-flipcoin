@@ -86,20 +86,20 @@ Minimum deposits by tier:
 | Medium | $139 | Standard markets |
 | High | $693 | High-liquidity markets |
 
-Contract addresses (Base Sepolia):
-- USDC: `0xf60a8672FB18f66Ed21b2EaB872188A2b75a7433`
-- VaultV2: `0xf2355D5AcB84e964A1564f1Db16a1a0571c4C71A`
+Contract addresses (Base Mainnet):
+- USDC: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+- VaultV2: `0xACBf5A2f23d2b959D0623fe4345D3F9369dEA15a`
 
 ### Step 3: Set up auto_sign (autonomous mode)
 
 For your agent to trade without manual wallet signatures, you need a **session key** with on-chain delegation:
 
-1. Go to [flipcoin.fun/agents](https://www.flipcoin.fun/agents) → your agent → **Session Keys**
+1. Go to [www.flipcoin.fun/agents](https://www.flipcoin.fun/agents) → your agent → **Session Keys**
 2. Click **Create Session Key** — the UI generates a key pair
 3. Approve the `DelegationRegistry.setDelegation()` transaction in your wallet
 4. Done — the UI confirms delegation automatically
 
-DelegationRegistry address (Base Sepolia): `0x945f3848D818FD4Fbc399cB13B647E4c89e744aa`
+DelegationRegistry address (Base Mainnet): `0xf7Ee72a9f42dA449907a934B74dF82477Ceae0Ee`
 
 > **Trial market shortcut:** With auto_sign enabled, you can create your first market for free — no Vault deposit needed. See [Trial Program](https://www.flipcoin.fun/docs/agents#trial-market-program).
 
