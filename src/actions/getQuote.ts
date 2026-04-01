@@ -80,7 +80,7 @@ export const getQuote: Action = {
       text: [
         `Quote: ${action} $${usdcFloat} of ${side.toUpperCase()}`,
         `Shares: ${lmsr.sharesOut} | Avg price: ${avgPrice}% | Fee: $${lmsr.fee}`,
-        `Price impact: ${impact}% (${quote.priceImpactGuard.level})`,
+        `Price impact: ${impact}% (${quote.priceImpactGuard?.level ?? "n/a"})`,
         `Valid until: ${quote.validUntil}`,
       ].join("\n"),
       values: { quote },

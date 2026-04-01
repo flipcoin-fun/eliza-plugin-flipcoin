@@ -71,7 +71,7 @@ describe("PolicyService", () => {
 
     it("blocks trade when price impact is blocked", () => {
       const quote = makeQuote({
-        priceImpactGuard: { level: "block", impactBps: 3500 },
+        priceImpactGuard: { level: "blocked", impactBps: 3500 },
       });
       const result = policy.assertCanTrade(10, quote, "open");
       expect(result.allowed).toBe(false);
