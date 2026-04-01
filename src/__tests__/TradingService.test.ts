@@ -50,7 +50,7 @@ describe("TradingService", () => {
       usdcAmount: "5000000",
     });
 
-    expect(receipt.status).toBe("submitted");
+    expect(receipt.status).toBe("confirmed");
     expect(receipt.txHash).toBe("0xabc123");
     expect(receipt.intentId).toBe("intent-123");
     expect(mockApi.post).toHaveBeenCalledTimes(2);
@@ -76,7 +76,7 @@ describe("TradingService", () => {
     expect(mockApi.post).toHaveBeenCalledTimes(2);
   });
 
-  it("returns unknown status when auto_sign is disabled", async () => {
+  it("returns failed status when auto_sign is disabled", async () => {
     const noAutoSign = new TradingService(mockApi as never, {
       ...mockConfig,
       autoSign: false,
@@ -91,7 +91,7 @@ describe("TradingService", () => {
       usdcAmount: "1000000",
     });
 
-    expect(receipt.status).toBe("unknown");
+    expect(receipt.status).toBe("failed");
     expect(receipt.message).toContain("auto_sign is disabled");
     // Only intent call, no relay
     expect(mockApi.post).toHaveBeenCalledTimes(1);

@@ -93,7 +93,7 @@ export async function executeTradePipeline(
   });
 
   // Record spend on success
-  if (receipt.status === "submitted") {
+  if (receipt.status === "confirmed") {
     svc.policy.recordSpend(parsed.usdcAmount);
   }
 
@@ -121,7 +121,6 @@ function formatReceipt(
   ];
 
   if (r.txHash) lines.push(`Tx: ${r.txHash}`);
-  if (r.status === "unknown") lines.push(r.message);
 
   return lines.join("\n");
 }
