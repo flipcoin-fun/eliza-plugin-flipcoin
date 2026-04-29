@@ -57,6 +57,14 @@ export class TradingService {
       usdcAmount: params.usdcAmount,
       sharesAmount: params.sharesAmount,
       maxSlippageBps: params.maxSlippageBps,
+      maxFeeBps: params.maxFeeBps,
+      venue: params.venue,
+      // Per-trade reasoning (PR #2). Forwarded as-is so the API auto-comments
+      // after a fill. All optional — backend accepts both camel/snake_case.
+      confidenceBps: params.confidenceBps,
+      reasoning: params.reasoning,
+      dataSources: params.dataSources,
+      modelUsed: params.modelUsed,
     });
   }
 

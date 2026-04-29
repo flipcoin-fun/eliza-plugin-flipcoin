@@ -23,7 +23,16 @@ export class MarketService {
   /** Browse open markets (cached for 60s). */
   async explore(params?: ExploreParams): Promise<MarketSummary[]> {
     const isCacheable =
-      !params || (!params.search && !params.offset && !params.status);
+      !params ||
+      (!params.search &&
+        !params.offset &&
+        !params.status &&
+        !params.fingerprint &&
+        !params.createdByAgent &&
+        !params.creatorAddr &&
+        params.minVolume === undefined &&
+        !params.resolveEndBefore &&
+        !params.resolveEndAfter);
 
     if (
       isCacheable &&
@@ -37,6 +46,12 @@ export class MarketService {
     if (params?.status) query.status = params.status;
     if (params?.sort) query.sort = params.sort;
     if (params?.search) query.search = params.search;
+    if (params?.fingerprint) query.fingerprint = params.fingerprint;
+    if (params?.createdByAgent) query.createdByAgent = params.createdByAgent;
+    if (params?.creatorAddr) query.creatorAddr = params.creatorAddr;
+    if (params?.minVolume !== undefined) query.minVolume = String(params.minVolume);
+    if (params?.resolveEndBefore) query.resolveEndBefore = params.resolveEndBefore;
+    if (params?.resolveEndAfter) query.resolveEndAfter = params.resolveEndAfter;
     if (params?.limit) query.limit = String(params.limit);
     if (params?.offset) query.offset = String(params.offset);
 
