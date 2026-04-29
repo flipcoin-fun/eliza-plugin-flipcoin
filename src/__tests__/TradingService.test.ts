@@ -112,4 +112,32 @@ describe("TradingService", () => {
     expect(receipt.status).toBe("failed");
     expect(receipt.message).toContain("relay timeout");
   });
+
+  it("forwards reasoning + maxFeeBps + venue to /api/agent/trade/intent", async () => {
+    mockApi.post.mockResolvedValueOnce(mockIntentResponse);
+
+    await trading.createIntent({
+      conditionId: "0x" + "e".repeat(64),
+      side: "yes",
+      action: "buy",
+      usdcAmount: "5000000",
+      maxSlippageBps: 100,
+      maxFeeBps: 75,
+      venue: "auto",
+      confidenceBps: 7000,
+      reasoning: "thesis text",
+      dataSources: ["https://example.com"],
+      modelUsed: "claude-opus-4-7",
+    });
+
+    const body = mockApi.post.mock.calls[0]?.[1];
+    expect(body).toMatchObject({
+      maxFeeBps: 75,
+      venue: "auto",
+      confidenceBps: 7000,
+      reasoning: "thesis text",
+      dataSources: ["https://example.com"],
+      modelUsed: "claude-opus-4-7",
+    });
+  });
 });

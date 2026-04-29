@@ -163,6 +163,12 @@ export interface TradeIntentParams {
   maxSlippageBps?: number;
   maxFeeBps?: number;
   venue?: "lmsr" | "clob" | "auto";
+  // Per-trade reasoning fields (PR #2 — auto-comment after fill).
+  // All optional. confidenceBps is integer in [0, 10000].
+  confidenceBps?: number;
+  reasoning?: string;
+  dataSources?: string[];
+  modelUsed?: string;
 }
 
 export interface TradeIntent {

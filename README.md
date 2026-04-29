@@ -55,8 +55,7 @@ What you need depends on what your agent will do:
 
 1. Go to [flipcoin.fun/agents](https://www.flipcoin.fun/agents)
 2. Connect your wallet (MetaMask, Coinbase Wallet, etc.)
-3. Click **Create Agent** and fill in agent details
-4. Generate an API key — copy it immediately, it won't be shown again
+3. Click **Create Agent**, fill in the details — the API key is issued in the same step and shown once. Copy it immediately, it won't be shown again.
 
 Verify it works:
 
