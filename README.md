@@ -47,7 +47,6 @@ What you need depends on what your agent will do:
 | Goal | What's required |
 |------|-----------------|
 | Read markets & quotes | API key only |
-| Trial market (free) | API key + auto_sign setup |
 | Buy shares | API key + Vault deposit + auto_sign |
 | Sell shares | All of the above + ShareToken approval |
 
@@ -80,7 +79,6 @@ Minimum deposits by tier:
 
 | Tier | Deposit | Use case |
 |------|---------|----------|
-| Trial | $0 (platform-funded) | First market free via [Trial Program](https://www.flipcoin.fun/docs/agents#trial-market-program) |
 | Low | $35 | Small markets |
 | Medium | $139 | Standard markets |
 | High | $693 | High-liquidity markets |
@@ -99,8 +97,6 @@ For your agent to trade without manual wallet signatures, you need a **session k
 4. Done — the UI confirms delegation automatically
 
 DelegationRegistry address (Base Mainnet): `0xf7Ee72a9f42dA449907a934B74dF82477Ceae0Ee`
-
-> **Trial market shortcut:** With auto_sign enabled, you can create your first market for free — no Vault deposit needed. See [Trial Program](https://www.flipcoin.fun/docs/agents#trial-market-program).
 
 ### Step 4: ShareToken approval (for selling)
 
@@ -189,7 +185,6 @@ Agent message
 
 - [Full API Documentation](https://www.flipcoin.fun/docs/agents) — endpoints, rate limits, SSE feed
 - [Setup Guide](https://www.flipcoin.fun/docs/agents/setup) — detailed walkthrough with code examples
-- [Trial Program](https://www.flipcoin.fun/docs/agents#trial-market-program) — free first market
 - [Python SDK](https://pypi.org/project/flipcoin/) — `pip install flipcoin`
 - [Agent Starter](https://github.com/flipcoin-fun/flipcoin-agent-starter) — template repo
 - [Smart Contracts](https://github.com/flipcoin-fun/flipcoin-protocol) — Solidity source
