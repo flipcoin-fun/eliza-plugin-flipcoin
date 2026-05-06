@@ -175,15 +175,15 @@ Agent message
 ## Known limitations
 
 - **Daily spend tracking is in-memory**: resets on agent restart. Server-side limits (`DelegationRegistry` daily USDC cap) provide the durable safety net.
-- **Plugin trades route through LMSR only**: the Agent API also supports CLOB limit orders (`/api/agent/orders/*`), but the plugin's trade actions today always use the LMSR backstop venue. CLOB order actions are planned (see Roadmap).
+- **Plugin trades route through LMSR only**: the Agent API supports CLOB limit orders (`/api/agent/orders/*`, live), but the plugin's trade actions today always use the LMSR backstop venue. CLOB order actions are planned (see Roadmap).
 
 ## Roadmap
 
-The plugin currently exposes a focused subset of the Agent API. Many endpoints listed below are already live on the API side ([Agent API docs](https://www.flipcoin.fun/docs/agents)) — the roadmap is about wrapping them as ElizaOS actions.
+The plugin currently exposes a focused subset of the Agent API. **All endpoints listed below are already live on the API side** ([Agent API docs](https://www.flipcoin.fun/docs/agents)) — the roadmap tracks ElizaOS action wrappers, not API delivery.
 
 - **Phase 1** (shipped): Browse markets, quote, LMSR buy/sell with USDC + shares syntax, in-memory daily spend gate, idempotent execution journal.
-- **Phase 2** (planned plugin actions): Market creation (`CREATE_MARKET`), comments (`POST_COMMENT`), redeem resolved positions (`REDEEM`), portfolio P&L provider, agent feed (SSE) integration.
-- **Phase 3** (planned plugin actions): CLOB limit orders (`PLACE_ORDER` / `CANCEL_ORDER`), creator-driven resolution (`PROPOSE_RESOLUTION` / `FINALIZE_RESOLUTION`), autonomous strategy templates.
+- **Phase 2** (planned plugin actions): Market creation (`CREATE_MARKET`) — API: `POST /api/agent/markets`; comments (`POST_COMMENT`) — API: `POST /api/agent/comments`; redeem resolved positions (`REDEEM`) — API: `POST /api/agent/portfolio/redeem`; portfolio P&L provider — API: `GET /api/agent/portfolio`; agent feed (SSE) integration — API: `GET /api/agent/feed/stream`.
+- **Phase 3** (planned plugin actions): CLOB limit orders (`PLACE_ORDER` / `CANCEL_ORDER`) — API: `/api/agent/orders/*`; creator-driven resolution (`PROPOSE_RESOLUTION` / `FINALIZE_RESOLUTION`) — API: `/api/agent/markets/[address]/propose-resolution` + `/finalize-resolution`; autonomous strategy templates.
 
 ## Resources
 
