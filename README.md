@@ -138,15 +138,17 @@ If approval is missing, the API returns `SHARE_TOKEN_NOT_APPROVED` with the exac
 
 ## Actions
 
-| Action | Description |
-|--------|-------------|
-| `LIST_MARKETS` | Browse open prediction markets with filters |
-| `GET_MARKET` | Get detailed info about a specific market |
-| `GET_QUOTE` | Preview a trade without executing |
-| `BUY_YES` | Buy YES shares on a market |
-| `BUY_NO` | Buy NO shares on a market |
-| `SELL_YES` | Sell YES shares |
-| `SELL_NO` | Sell NO shares |
+| Action | Description | Example user message |
+|--------|-------------|----------------------|
+| `LIST_MARKETS` | Browse open prediction markets with filters | `Show me open markets` |
+| `GET_MARKET` | Get detailed info about a specific market | `Show market 0xabc...def` |
+| `GET_QUOTE` | Preview a trade without executing | `Quote 5 USDC YES on 0x<conditionId>` |
+| `BUY_YES` | Buy YES shares — denominated in **USDC** | `Buy $5 YES on 0x<conditionId>` |
+| `BUY_NO` | Buy NO shares — denominated in **USDC** | `Buy $5 NO on 0x<conditionId>` |
+| `SELL_YES` | Sell YES shares — denominated in **shares** | `Sell 10 shares YES on 0x<conditionId>` |
+| `SELL_NO` | Sell NO shares — denominated in **shares** | `Sell 10 shares NO on 0x<conditionId>` |
+
+> **Note on sell syntax**: the Agent API requires `sharesAmount` for sells (not USDC). Sell prompts must include the `shares` keyword — `Sell $5 YES on 0x...` is rejected with a parser hint before any HTTP call.
 
 ## Providers
 
@@ -172,14 +174,16 @@ Agent message
 
 ## Known limitations
 
-- **Daily spend tracking is in-memory**: resets on agent restart. Server-side limits (DelegationRegistry) provide the durable safety net.
-- **Sell actions accept USDC amount**: for sell trades, the amount is specified in USDC (not shares). Share-based sells are planned for Phase 2.
+- **Daily spend tracking is in-memory**: resets on agent restart. Server-side limits (`DelegationRegistry` daily USDC cap) provide the durable safety net.
+- **Plugin trades route through LMSR only**: the Agent API also supports CLOB limit orders (`/api/agent/orders/*`), but the plugin's trade actions today always use the LMSR backstop venue. CLOB order actions are planned (see Roadmap).
 
 ## Roadmap
 
-- **Phase 1** (current): Read markets + LMSR trading
-- **Phase 2**: Market creation, feed/webhooks, agent stats
-- **Phase 3**: CLOB limit orders, autonomous strategies, comments
+The plugin currently exposes a focused subset of the Agent API. Many endpoints listed below are already live on the API side ([Agent API docs](https://www.flipcoin.fun/docs/agents)) — the roadmap is about wrapping them as ElizaOS actions.
+
+- **Phase 1** (shipped): Browse markets, quote, LMSR buy/sell with USDC + shares syntax, in-memory daily spend gate, idempotent execution journal.
+- **Phase 2** (planned plugin actions): Market creation (`CREATE_MARKET`), comments (`POST_COMMENT`), redeem resolved positions (`REDEEM`), portfolio P&L provider, agent feed (SSE) integration.
+- **Phase 3** (planned plugin actions): CLOB limit orders (`PLACE_ORDER` / `CANCEL_ORDER`), creator-driven resolution (`PROPOSE_RESOLUTION` / `FINALIZE_RESOLUTION`), autonomous strategy templates.
 
 ## Resources
 
